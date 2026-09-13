@@ -43,10 +43,9 @@ combo_t key_combos[] = {
 const key_override_t exclamation_mark_override = ko_make_basic(MOD_MASK_SHIFT, KC_DOT, S(KC_1));
 const key_override_t comma_pipe_override       = ko_make_basic(MOD_MASK_SHIFT, KC_COMMA, S(KC_BSLS));
 
-const key_override_t **key_overrides = (const key_override_t *[]){
+const key_override_t *key_overrides[] = {
     &exclamation_mark_override,
     &comma_pipe_override,
-    NULL,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
