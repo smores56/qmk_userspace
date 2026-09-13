@@ -1,0 +1,12 @@
+{
+    "userspace_version": "1.0",
+    "build_targets": [
+        {
+            "keyboard": "clog",
+            "keymap": "smores56",
+            "env": {
+                "CONVERT_TO": "proton_c"
+            }
+        }
+    ]
+}
