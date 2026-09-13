@@ -1,12 +1,9 @@
 // Copyright 2026 Sam Mohr <sam@sammohr.dev>
-// SPDX-License-Identifier: GPL-2.0+
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 // Ported from the ZMK layout in smores56/zmk-config (config/34-key.keymap).
-// Board: Osprette. NOTE: the Osprette board definition is not upstream in QMK;
-// it lives on the smores56/qmk_firmware `add-osprette` branch. Add that fork as a
-// submodule (or upstream the board) to compile this keymap. Its LAYOUT argument
-// order matches the ZMK 34-key matrix transform index order, unlike clog's
-// LAYOUT_split_3x5_2.
+// Board: Osprette. LAYOUT follows the upstream split_3x5_2 argument order
+// (left half, then right half), matching the merged clog keymap.
 
 #include QMK_KEYBOARD_H
 
@@ -50,32 +47,48 @@ const key_override_t *key_overrides[] = {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_MAIN] = LAYOUT(
-                           LT(_FN, KC_F), KC_M,          KC_P,          KC_V,          KC_SCLN,  KC_DOT,         KC_SLSH,         LT(_FN, KC_BSLS),
-        KC_W, SFT_T(KC_R), ALT_T(KC_S),  CTL_T(KC_N),   GUI_T(KC_T),   KC_G,     KC_COMM,  GUI_T(KC_A),    CTL_T(KC_E),     ALT_T(KC_I),      SFT_T(KC_H), KC_QUOT,
-               KC_X,       KC_C,         KC_L,          LT(_SYM, KC_D), KC_B,    KC_MINS,  LT(_SYM, KC_U), KC_O,            KC_Y,             KC_K,
-                                                     KC_ENT,        LT(_NAV, KC_SPC), OSM(MOD_RSFT), KC_BSPC
+        KC_W,        LT(_FN, KC_F), KC_M,         KC_P,         KC_V,
+        SFT_T(KC_R), ALT_T(KC_S),   CTL_T(KC_N),  GUI_T(KC_T),  KC_G,
+        KC_X,        KC_C,          KC_L,         LT(_SYM, KC_D), KC_B,
+        KC_ENT,      LT(_NAV, KC_SPC),
+        KC_SCLN,     KC_DOT,        KC_SLSH,      LT(_FN, KC_BSLS), KC_QUOT,
+        KC_COMM,     GUI_T(KC_A),   CTL_T(KC_E),  ALT_T(KC_I),  SFT_T(KC_H),
+        KC_MINS,     LT(_SYM, KC_U), KC_O,        KC_Y,         KC_K,
+        OSM(MOD_RSFT), KC_BSPC
     ),
 
     [_SYM] = LAYOUT(
-                           KC_7, KC_8, KC_9, S(KC_8),      S(KC_GRV), S(KC_LBRC), S(KC_RBRC), S(KC_3),
-        S(KC_6), KC_DOT,   KC_1, KC_2, KC_3, KC_EQL,        S(KC_COMM), S(KC_9),   S(KC_0),    S(KC_DOT), S(KC_7),   KC_GRV,
-                 KC_COMM,  KC_4, KC_5, KC_6, S(KC_EQL),    S(KC_4),    KC_LBRC,   KC_RBRC,    S(KC_2),   S(KC_5),
-                                       S(KC_SCLN), KC_0,     KC_TRNS,    KC_TRNS
+        S(KC_6),     KC_7,          KC_8,         KC_9,         S(KC_8),
+        KC_DOT,      KC_1,          KC_2,         KC_3,         KC_EQL,
+        KC_COMM,     KC_4,          KC_5,         KC_6,         S(KC_EQL),
+        S(KC_SCLN),  KC_0,
+        S(KC_GRV),   S(KC_LBRC),    S(KC_RBRC),   S(KC_3),      KC_GRV,
+        S(KC_COMM),  S(KC_9),       S(KC_0),      S(KC_DOT),    S(KC_7),
+        S(KC_4),     KC_LBRC,       KC_RBRC,      S(KC_2),      S(KC_5),
+        KC_TRNS,     KC_TRNS
     ),
 
     [_NAV] = LAYOUT(
-                           KC_VOLD, KC_VOLU, KC_MPRV, KC_MNXT,  KC_F10,  KC_F7,  KC_F8, KC_F9,
-        KC_MPLY, KC_LEFT,  KC_DOWN, KC_UP,   KC_RGHT, C(KC_TAB), KC_F11,  KC_F1,  KC_F2, KC_F3, KC_BRID, KC_BRIU,
-                 KC_HOME,  KC_PGDN, KC_PGUP, KC_END,  C(S(KC_TAB)), KC_F12, KC_F4, KC_F5, KC_F6, KC_PSCR,
-                                       KC_NO,   KC_NO,      KC_TRNS, KC_DEL
+        KC_MPLY,     KC_VOLD,       KC_VOLU,      KC_MPRV,      KC_MNXT,
+        KC_LEFT,     KC_DOWN,       KC_UP,        KC_RGHT,      C(KC_TAB),
+        KC_HOME,     KC_PGDN,       KC_PGUP,      KC_END,       C(S(KC_TAB)),
+        KC_NO,       KC_NO,
+        KC_F10,      KC_F7,         KC_F8,        KC_F9,        KC_BRIU,
+        KC_F11,      KC_F1,         KC_F2,        KC_F3,        KC_BRID,
+        KC_F12,      KC_F4,         KC_F5,        KC_F6,        KC_PSCR,
+        KC_TRNS,     KC_DEL
     ),
 
     // ZMK's FN layer was Bluetooth (BT_SEL/BT_CLR), which has no wired equivalent.
     // Reset/boot loader occupy the same positions; F-keys fill the rest.
     [_FN] = LAYOUT(
-                           KC_NO, KC_NO, QK_RBT, QK_BOOT,   QK_BOOT, QK_RBT, KC_NO, KC_NO,
-        KC_NO, KC_NO,      KC_F3, KC_F2, KC_F1, KC_F6,        KC_F6,   KC_F1,  KC_F2, KC_F3, KC_NO, KC_NO,
-                 KC_NO,    KC_NO, KC_F5, KC_F4, KC_NO,        KC_NO,   KC_F4,  KC_F5, KC_NO, KC_NO,
-                                       KC_NO, KC_NO,          KC_TRNS, KC_NO
+        KC_NO,       KC_NO,         KC_NO,        QK_RBT,       QK_BOOT,
+        KC_NO,       KC_F3,         KC_F2,        KC_F1,        KC_F6,
+        KC_NO,       KC_NO,         KC_F5,        KC_F4,        KC_NO,
+        KC_NO,       KC_NO,
+        QK_BOOT,     QK_RBT,        KC_NO,        KC_NO,        KC_NO,
+        KC_F6,       KC_F1,         KC_F2,        KC_F3,        KC_NO,
+        KC_NO,       KC_F4,         KC_F5,        KC_NO,        KC_NO,
+        KC_TRNS,     KC_NO
     ),
 };
