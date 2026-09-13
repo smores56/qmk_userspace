@@ -9,7 +9,7 @@ Keymaps are ported from the ZMK layout in [`smores56/zmk-config`](https://github
 | Board | QMK keyboard | Keymap | Firmware |
 | ----- | ------------ | ------ | -------- |
 | Clog / Clog V3 / **Steel Toe** / Sephirette | `clog` (upstream) | `smores56` | `clog_smores56_proton_c.bin` |
-| Osprette | `osprette` (not upstream) | `smores56` | — |
+| Osprette / Osprangle | `osprette` (upstream, PR [qmk#26450](https://github.com/qmk/qmk_firmware/pull/26450)) | `smores56` | — |
 
 Both keymaps implement the same physical layout:
 
