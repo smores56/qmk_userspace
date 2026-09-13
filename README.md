@@ -8,7 +8,7 @@ Keymaps are ported from the ZMK layout in [`smores56/zmk-config`](https://github
 
 | Board | QMK keyboard | Keymap | Firmware |
 | ----- | ------------ | ------ | -------- |
-| Clog / Clog V3 / **Steel Toe** / Sephirette | `clog` (upstream) | `smores56` | `clog_smores56_proton_c.bin` |
+| Clog / Clog V3 / **Steel Toe** / Sephirette | `clog` (upstream) | `smores56` | `clog_smores56_proton_c.bin`, `clog_smores56_blok.uf2` |
 | Osprette | `osprette` (not upstream) | `smores56` | — |
 
 Both keymaps implement the same physical layout:
@@ -21,27 +21,34 @@ Both keymaps implement the same physical layout:
 
 ## Steel Toe hardware notes
 
-The Steel Toe uses **two Proton C** controllers (STM32F303, ChibiOS). Upstream `clog`
-is defined for an AVR `elite_c`, so build with the Pro Micro→Proton C converter:
+The Steel Toe uses **two Pro Micro-compatible controllers**. Upstream `clog` is
+defined for an AVR `elite_c`, so build with the Pro Micro→target converter:
 
 ```sh
-qmk compile -kb clog -km smores56 -e CONVERT_TO=proton_c
+qmk compile -kb clog -km smores56 -e CONVERT_TO=proton_c   # STM32F303
+qmk compile -kb clog -km smores56 -e CONVERT_TO=blok       # RP2040
 # or
 make clog:smores56 CONVERT_TO=proton_c
+make clog:smores56 CONVERT_TO=blok
 ```
 
-Output: `clog_smores56_proton_c.bin`.
+Outputs: `clog_smores56_proton_c.bin` (DFU) and `clog_smores56_blok.uf2` (UF2).
+
+Both halves must run the **same controller type** — QMK's split transport is not
+compatible across MCU families, so do not mix Proton C and Blok.
 
 ## Building with GitHub Actions (no local toolchain)
 
-`qmk.json` lists the build target with `CONVERT_TO=proton_c`. Push to `main`; the
-`Build QMK firmware` workflow compiles it and publishes the `.bin` as a release
-artifact. Enable Actions once under **Settings → Actions** if it is off.
+`qmk.json` lists the build targets (`CONVERT_TO=proton_c` and `CONVERT_TO=blok`). Push
+to `main`; the `Build QMK firmware` workflow compiles them and publishes the artifacts.
+Enable Actions once under **Settings → Actions** if it is off.
 
 ## Flashing on smoresbook (NixOS)
 
-Both halves use the same firmware. Flash **each half separately**, USB attached to the
-**left/master** half (QMK defaults to `MASTER_LEFT`).
+Both halves use the same firmware and must be the same controller type. Flash
+**each half separately**; each has its own USB port.
+
+### Proton C (STM32F303) — DFU
 
 `nix-config` does not yet provide `dfu-util` or QMK udev rules. Use it transiently:
 
@@ -67,7 +74,20 @@ half — the reset button does **not** work:
 - hold the top-left key (matrix `0,0`) while plugging in USB (bootmagic), **or**
 - bridge `BOOT0` to VCC, tap `RESET` to GND, release `BOOT0`.
 
-Then repeat for the other half.
+### Blok (RP2040) — UF2
+
+No `dfu-util` or udev rules needed: the RP2040 exposes a USB mass-storage bootloader.
+
+1. Hold `BOOTSEL` on the half (or press `QK_BOOT` on the `FN` layer if QMK is already
+   running) and plug in USB; it mounts as `RPI-RP2`.
+2. Copy the firmware onto it:
+   ```sh
+   cp clog_smores56_blok.uf2 /run/media/$USER/RPI-RP2/
+   ```
+   If it isn't auto-mounted: `udisksctl mount -b /dev/sdX1`.
+3. It reboots into QMK automatically.
+
+Repeat for the other half. Keep USB in the **left** half once you're done.
 
 ## Osprette
 
@@ -83,4 +103,5 @@ nix shell nixpkgs#qmk
 qmk setup
 qmk config user.overlay_dir="$(realpath .)"
 qmk compile -kb clog -km smores56 -e CONVERT_TO=proton_c
+qmk compile -kb clog -km smores56 -e CONVERT_TO=blok
 ```

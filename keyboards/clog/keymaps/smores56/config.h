@@ -11,4 +11,8 @@
 // (137kbaud), which is marginal over the TRRS link on the 72MHz STM32F303;
 // QMK documents split support on converted ARM boards as "partial". Lowering
 // the soft serial speed is the documented remedy for failed transactions.
-#define SELECT_SOFT_SERIAL_SPEED 3
+// Scoped to proton_c: the RP2040 PIO vendor driver reads this too, and its
+// 230400 baud default is already reliable.
+#ifdef CONVERT_TO_PROTON_C
+#    define SELECT_SOFT_SERIAL_SPEED 3
+#endif
