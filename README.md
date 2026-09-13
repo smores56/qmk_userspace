@@ -38,26 +38,36 @@ Output: `clog_smores56_proton_c.bin`.
 `Build QMK firmware` workflow compiles it and publishes the `.bin` as a release
 artifact. Enable Actions once under **Settings → Actions** if it is off.
 
-## Flashing on the XPS 13 (smoresbook)
+## Flashing on smoresbook (NixOS)
 
 Both halves use the same firmware. Flash **each half separately**, USB attached to the
 **left/master** half (QMK defaults to `MASTER_LEFT`).
 
-1. Install `dfu-util` (`sudo apt install dfu-util`). The Proton C uses the STM32
-   factory DFU bootloader (`0483:DF11`).
-2. Enter the bootloader on one half — the Proton C **reset button does not** do this:
-   - press the `QK_BOOT` key on the `FN` layer, **or**
-   - hold the top-left key (matrix `0,0`) while plugging in USB (bootmagic), **or**
-   - bridge `BOOT0` to VCC, tap `RESET` to GND, release `BOOT0`.
-3. Flash:
+`nix-config` does not yet provide `dfu-util` or QMK udev rules. Use it transiently:
 
-   ```sh
-   dfu-util -a 0 -d 0483:DF11 -s 0x8000000:leave -D clog_smores56_proton_c.bin
-   ```
+```sh
+nix shell nixpkgs#dfu-util -c \
+  dfu-util -a 0 -d 0483:DF11 -s 0x8000000:leave -D clog_smores56_proton_c.bin
+```
 
-   With QMK installed locally this is just
-   `qmk flash -kb clog -km smores56 -e CONVERT_TO=proton_c`.
-4. Repeat for the other half.
+or add it declaratively to `nix-config` (recommended):
+
+```nix
+# system packages
+pkgs.dfu-util
+
+# udev rules so flashing needs no root
+services.udev.packages = [ pkgs.qmk-udev-rules ];
+```
+
+The Proton C uses the STM32 factory DFU bootloader (`0483:DF11`). Enter it on one
+half — the reset button does **not** work:
+
+- press the `QK_BOOT` key on the `FN` layer, **or**
+- hold the top-left key (matrix `0,0`) while plugging in USB (bootmagic), **or**
+- bridge `BOOT0` to VCC, tap `RESET` to GND, release `BOOT0`.
+
+Then repeat for the other half.
 
 ## Osprette
 
@@ -66,9 +76,10 @@ The Osprette board definition is not upstream in QMK. It currently lives on the
 `keyboards/osprette/keymaps/smores56` here is therefore archival/forward-looking until
 that board is upstreamed (planned) or the fork is added as a submodule.
 
-## Local build
+## Local build (NixOS)
 
 ```sh
+nix shell nixpkgs#qmk
 qmk setup
 qmk config user.overlay_dir="$(realpath .)"
 qmk compile -kb clog -km smores56 -e CONVERT_TO=proton_c
