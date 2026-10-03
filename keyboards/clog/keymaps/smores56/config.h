@@ -1,7 +1,17 @@
 #pragma once
 
-// Matches the ZMK devicetree: &mt tapping-term <150>, combos timeout <15ms>.
-#define TAPPING_TERM 150
+// Base tapping term from the ZMK devicetree (&mt tapping-term <150>), raised to
+// QMK's 200ms default: at 150ms a fast same-hand mod-tap roll (e.g. Ctrl+T via
+// CTL_T(KC_N) + GUI_T(KC_T)) releases the hold-tap key before the term, so the
+// hold resolves as its tap and the chord is silently dropped.
+#define TAPPING_TERM 200
+
+// ZMK used `flavor = "tap-preferred"` (QMK's default), which ignores interrupts:
+// tapping another key while a mod-tap is undecided does not settle it as a hold.
+// PERMISSIVE_HOLD settles the hold when that other key is tapped and released
+// within the term, which is how modifier chords are actually typed.
+#define PERMISSIVE_HOLD
+
 #define COMBO_TERM 20
 
 #define ONESHOT_TAP_TOGGLE 0
