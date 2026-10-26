@@ -16,27 +16,38 @@ enum layers {
 enum combos {
     FM_Z,
     MP_Q,
+    MV_J,
     SN_ESCAPE,
     NT_TAB,
-    DOT_SLASH_BSLS,
-    SLASH_J_CAPS,
+    SLASH_BSLS_CAPS,
 };
 
-const uint16_t PROGMEM z_combo[]         = {LT(_FN, KC_F), KC_M, COMBO_END};
-const uint16_t PROGMEM q_combo[]         = {KC_M, KC_P, COMBO_END};
-const uint16_t PROGMEM escape_combo[]    = {ALT_T(KC_S), CTL_T(KC_N), COMBO_END};
-const uint16_t PROGMEM tab_combo[]       = {CTL_T(KC_N), GUI_T(KC_T), COMBO_END};
-const uint16_t PROGMEM backslash_combo[] = {KC_DOT, KC_SLSH, COMBO_END};
-const uint16_t PROGMEM caps_combo[]      = {KC_SLSH, LT(_FN, KC_J), COMBO_END};
+const uint16_t PROGMEM z_combo[]      = {LT(_FN, KC_F), KC_M, COMBO_END};
+const uint16_t PROGMEM q_combo[]      = {KC_M, KC_P, COMBO_END};
+const uint16_t PROGMEM j_combo[]      = {KC_M, KC_V, COMBO_END};
+const uint16_t PROGMEM escape_combo[] = {ALT_T(KC_S), CTL_T(KC_N), COMBO_END};
+const uint16_t PROGMEM tab_combo[]    = {CTL_T(KC_N), GUI_T(KC_T), COMBO_END};
+const uint16_t PROGMEM caps_combo[]   = {KC_SLSH, LT(_FN, KC_BSLS), COMBO_END};
 
 combo_t key_combos[] = {
-    [FM_Z]           = COMBO(z_combo, KC_Z),
-    [MP_Q]           = COMBO(q_combo, KC_Q),
-    [SN_ESCAPE]      = COMBO(escape_combo, KC_ESC),
-    [NT_TAB]         = COMBO(tab_combo, KC_TAB),
-    [DOT_SLASH_BSLS] = COMBO(backslash_combo, KC_BSLS),
-    [SLASH_J_CAPS]   = COMBO(caps_combo, KC_CAPS),
+    [FM_Z]            = COMBO(z_combo, KC_Z),
+    [MP_Q]            = COMBO(q_combo, KC_Q),
+    [MV_J]            = COMBO(j_combo, KC_J),
+    [SN_ESCAPE]       = COMBO(escape_combo, KC_ESC),
+    [NT_TAB]          = COMBO(tab_combo, KC_TAB),
+    [SLASH_BSLS_CAPS] = COMBO(caps_combo, KC_CAPS),
 };
+
+// Esc/Tab are the fast 15ms pair; everything else uses 20ms.
+uint16_t get_combo_term(uint16_t combo_index, combo_t *combo) {
+    switch (combo_index) {
+        case SN_ESCAPE:
+        case NT_TAB:
+            return 15;
+        default:
+            return 20;
+    }
+}
 
 // T=GUI is the th/the exception; everything else, including layer-taps, uses
 // permissive hold so mod and layer chords stay fast.
@@ -61,7 +72,7 @@ const key_override_t *key_overrides[] = {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_MAIN] = LAYOUT_split_3x5_2(
-        KC_W,         LT(_FN, KC_F),   KC_M,          KC_P,          KC_V,           KC_SCLN,  KC_DOT,         KC_SLSH,         LT(_FN, KC_J), KC_QUOT,
+        KC_W,         LT(_FN, KC_F),   KC_M,          KC_P,          KC_V,           KC_SCLN,  KC_DOT,         KC_SLSH,         LT(_FN, KC_BSLS), KC_QUOT,
         SFT_T(KC_R),  ALT_T(KC_S),     CTL_T(KC_N),   GUI_T(KC_T),   KC_G,           KC_COMM,  GUI_T(KC_A),    CTL_T(KC_E),     ALT_T(KC_I),      SFT_T(KC_H),
         KC_X,         KC_C,            KC_L,          LT(_SYM, KC_D), KC_B,          KC_MINS,  LT(_SYM, KC_U), KC_O,            KC_Y,             KC_K,
                                                      KC_ENT,        LT(_NAV, KC_SPC), OSM(MOD_RSFT), KC_BSPC

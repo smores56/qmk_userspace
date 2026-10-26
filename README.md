@@ -16,8 +16,9 @@ Both keymaps implement the same physical layout:
 - Layers: `MAIN`, `SYM`, `NAV`, `FN`. FN matches ZMK's Bluetooth layer per
   physical key; QMK uses `BT_PRF*`/`BT_UNPR` placeholders (no-ops on the wired
   boards). F-keys live on `NAV`.
-- Combos (main layer only): `F+M`→Z, `M+P`→Q, `S+N`→Esc, `N+T`→Tab,
-  `.+/`→`\`, `/ + J`→Caps Lock. `M+V`, `C+L`, and `L+D` are free.
+- Combos (main layer only): `S+N`→Esc (15ms), `N+T`→Tab (15ms),
+  `F+M`→Z, `M+P`→Q, `M+V`→J, `/ + \`→Caps Lock (20ms). `C+L` and `L+D` are free.
+- `\` is back on the top-right-ring key; hold it for FN. F also holds FN.
 - ZMK `mod-morph`s become QMK key overrides scoped to `MAIN`: `Shift+dot`→`!`,
   `Shift+comma`→`|`.
 - ZMK sticky-shift becomes `OSM(MOD_RSFT)`. Tap-hold is 200ms with a 150ms
