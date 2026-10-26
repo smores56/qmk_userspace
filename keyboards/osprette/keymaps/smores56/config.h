@@ -7,13 +7,9 @@
 #define QUICK_TAP_TERM 150
 #define PERMISSIVE_HOLD_PER_KEY
 
-// Must-tap combos would otherwise inherit TAPPING_TERM and feel dead for 200 ms.
-#define COMBO_HOLD_TERM 50
-// ZMK starts its combo timeout on the first press; keep QMK strict for parity.
-#define COMBO_STRICT_TIMER
+// Combos fire on the second press with a 20ms window, matching the old
+// working behavior: no must-tap, strict timer, hold term, or layer gate.
 #define COMBO_TERM 20
-#define COMBO_MUST_TAP_PER_COMBO
-#define COMBO_SHOULD_TRIGGER
 
 #define ONESHOT_TAP_TOGGLE 0
 #define ONESHOT_TIMEOUT 750

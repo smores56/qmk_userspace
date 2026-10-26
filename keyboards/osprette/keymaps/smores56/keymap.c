@@ -42,22 +42,6 @@ combo_t key_combos[] = {
     [SLASH_J_CAPS]   = COMBO(caps_combo, KC_CAPS),
 };
 
-bool get_combo_must_tap(uint16_t combo_index, combo_t *combo) {
-    switch (combo_index) {
-        case FM_Z:
-        case SN_ESCAPE:
-        case NT_TAB:
-        case SLASH_J_CAPS:
-            return true;
-        default:
-            return false;
-    }
-}
-
-bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
-    return get_highest_layer(layer_state | default_layer_state) == _MAIN;
-}
-
 // T=GUI is the th/the exception; everything else, including layer-taps, uses
 // permissive hold so mod and layer chords stay fast.
 bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
