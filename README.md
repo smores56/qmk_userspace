@@ -13,11 +13,17 @@ Keymaps are ported from the ZMK layout in [`smores56/zmk-config`](https://github
 
 Both keymaps implement the same physical layout:
 
-- Layers: `MAIN`, `SYM`, `NAV`, `FN` (FN = reset/bootloader + F-keys; ZMK's Bluetooth
-  keys are dropped — the boards are wired).
-- Combos: `F+M`→Z, `M+P`→Q, `M+V`→J, `C+L`→Esc, `L+D`→Tab.
-- ZMK `mod-morph`s become QMK key overrides: `Shift+dot`→`!`, `Shift+comma`→`|`.
-- ZMK sticky-shift becomes `OSM(MOD_RSFT)`; tapping term 150ms.
+- Layers: `MAIN`, `SYM`, `NAV`, `FN`. FN matches ZMK's Bluetooth layer per
+  physical key; QMK uses `BT_PRF*`/`BT_UNPR` placeholders (no-ops on the wired
+  boards). F-keys live on `NAV`.
+- Combos (main layer only): `F+M`→Z, `M+P`→Q, `S+N`→Esc, `N+T`→Tab,
+  `.+/`→`\`, `/ + J`→Caps Lock. `M+V`, `C+L`, and `L+D` are free.
+- ZMK `mod-morph`s become QMK key overrides scoped to `MAIN`: `Shift+dot`→`!`,
+  `Shift+comma`→`|`.
+- ZMK sticky-shift becomes `OSM(MOD_RSFT)`. Tap-hold is 200ms with a 150ms
+  quick tap; layer-taps are tap-preferred on both. QMK uses `CHORDAL_HOLD`
+  plus a per-key T exception for home-row mod-taps; ZMK uses per-hand balanced
+  home-row mod-taps with opposite-hand trigger positions.
 
 ## Steel Toe hardware notes
 

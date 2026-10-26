@@ -1,18 +1,22 @@
 #pragma once
 
-// Base tapping term from the ZMK devicetree (&mt tapping-term <150>), raised to
-// QMK's 200ms default: at 150ms a fast same-hand mod-tap roll (e.g. Ctrl+T via
-// CTL_T(KC_N) + GUI_T(KC_T)) releases the hold-tap key before the term, so the
-// hold resolves as its tap and the chord is silently dropped.
+// 200/150 matches the ZMK hold-tap behaviors. T=GUI is exempt from permissive
+// hold so a fast T->H roll in "th"/"the" taps instead of holding Shift+GUI.
 #define TAPPING_TERM 200
+#define QUICK_TAP_TERM 150
 
-// ZMK used `flavor = "tap-preferred"` (QMK's default), which ignores interrupts:
-// tapping another key while a mod-tap is undecided does not settle it as a hold.
-// PERMISSIVE_HOLD settles the hold when that other key is tapped and released
-// within the term, which is how modifier chords are actually typed.
-#define PERMISSIVE_HOLD
+// Chordal hold applies to mod-taps only; layer-taps stay tap-preferred on both
+// firmwares so NAV/SYM/FN remain usable with the same hand.
+#define CHORDAL_HOLD
+#define PERMISSIVE_HOLD_PER_KEY
 
-#define COMBO_TERM 20
+// Must-tap combos would otherwise inherit TAPPING_TERM and feel dead for 200 ms.
+#define COMBO_HOLD_TERM 50
+// ZMK starts its combo timeout on the first press; keep QMK strict for parity.
+#define COMBO_STRICT_TIMER
+#define COMBO_TERM_PER_COMBO
+#define COMBO_MUST_TAP_PER_COMBO
+#define COMBO_SHOULD_TRIGGER
 
 #define ONESHOT_TAP_TOGGLE 0
 #define ONESHOT_TIMEOUT 750

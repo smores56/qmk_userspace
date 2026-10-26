@@ -16,28 +16,79 @@ enum layers {
 enum combos {
     FM_Z,
     MP_Q,
-    MV_J,
-    CL_ESCAPE,
-    LD_TAB,
+    SN_ESCAPE,
+    NT_TAB,
+    DOT_SLASH_BSLS,
+    SLASH_J_CAPS,
 };
 
-const uint16_t PROGMEM z_combo[]      = {LT(_FN, KC_F), KC_M, COMBO_END};
-const uint16_t PROGMEM q_combo[]      = {KC_M, KC_P, COMBO_END};
-const uint16_t PROGMEM j_combo[]      = {KC_M, KC_V, COMBO_END};
-const uint16_t PROGMEM escape_combo[] = {KC_C, KC_L, COMBO_END};
-const uint16_t PROGMEM tab_combo[]    = {KC_L, LT(_SYM, KC_D), COMBO_END};
+const uint16_t PROGMEM z_combo[]         = {LT(_FN, KC_F), KC_M, COMBO_END};
+const uint16_t PROGMEM q_combo[]         = {KC_M, KC_P, COMBO_END};
+const uint16_t PROGMEM escape_combo[]    = {ALT_T(KC_S), CTL_T(KC_N), COMBO_END};
+const uint16_t PROGMEM tab_combo[]       = {CTL_T(KC_N), GUI_T(KC_T), COMBO_END};
+const uint16_t PROGMEM backslash_combo[] = {KC_DOT, KC_SLSH, COMBO_END};
+const uint16_t PROGMEM caps_combo[]      = {KC_SLSH, LT(_FN, KC_J), COMBO_END};
 
 combo_t key_combos[] = {
-    [FM_Z]      = COMBO(z_combo, KC_Z),
-    [MP_Q]      = COMBO(q_combo, KC_Q),
-    [MV_J]      = COMBO(j_combo, KC_J),
-    [CL_ESCAPE] = COMBO(escape_combo, KC_ESC),
-    [LD_TAB]    = COMBO(tab_combo, KC_TAB),
+    [FM_Z]           = COMBO(z_combo, KC_Z),
+    [MP_Q]           = COMBO(q_combo, KC_Q),
+    [SN_ESCAPE]      = COMBO(escape_combo, KC_ESC),
+    [NT_TAB]         = COMBO(tab_combo, KC_TAB),
+    [DOT_SLASH_BSLS] = COMBO(backslash_combo, KC_BSLS),
+    [SLASH_J_CAPS]   = COMBO(caps_combo, KC_CAPS),
 };
 
-// ZMK mod-morphs (dot_excl, comma_pipe) as QMK key overrides.
-const key_override_t exclamation_mark_override = ko_make_basic(MOD_MASK_SHIFT, KC_DOT, S(KC_1));
-const key_override_t comma_pipe_override       = ko_make_basic(MOD_MASK_SHIFT, KC_COMMA, S(KC_BSLS));
+uint16_t get_combo_term(uint16_t combo_index, combo_t *combo) {
+    switch (combo_index) {
+        case SN_ESCAPE:
+        case NT_TAB:
+            return 15;
+        default:
+            return 20;
+    }
+}
+
+bool get_combo_must_tap(uint16_t combo_index, combo_t *combo) {
+    switch (combo_index) {
+        case FM_Z:
+        case SN_ESCAPE:
+        case NT_TAB:
+        case SLASH_J_CAPS:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
+    return get_highest_layer(layer_state | default_layer_state) == _MAIN;
+}
+
+// Layer-taps stay tap-preferred on both firmwares so NAV/SYM/FN remain usable
+// with the same hand; chordal hold applies only to mod-taps.
+bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t *tap_hold_record, uint16_t other_keycode, keyrecord_t *other_record) {
+    if (IS_QK_LAYER_TAP(tap_hold_keycode)) {
+        return false;
+    }
+    return get_chordal_hold_default(tap_hold_record, other_record);
+}
+
+bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
+    if (IS_QK_LAYER_TAP(keycode)) {
+        return false;
+    }
+    switch (keycode) {
+        case GUI_T(KC_T):
+            return false;
+        default:
+            return true;
+    }
+}
+
+// ZMK mod-morphs (dot_excl, comma_pipe) as QMK key overrides, scoped to MAIN
+// so they do not change SYM/NAV behavior.
+const key_override_t exclamation_mark_override = ko_make_with_layers(MOD_MASK_SHIFT, KC_DOT, S(KC_1), 1 << _MAIN);
+const key_override_t comma_pipe_override       = ko_make_with_layers(MOD_MASK_SHIFT, KC_COMMA, S(KC_BSLS), 1 << _MAIN);
 
 const key_override_t *key_overrides[] = {
     &exclamation_mark_override,
@@ -46,7 +97,7 @@ const key_override_t *key_overrides[] = {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_MAIN] = LAYOUT_split_3x5_2(
-        KC_W,         LT(_FN, KC_F),   KC_M,          KC_P,          KC_V,           KC_SCLN,  KC_DOT,         KC_SLSH,         LT(_FN, KC_BSLS), KC_QUOT,
+        KC_W,         LT(_FN, KC_F),   KC_M,          KC_P,          KC_V,           KC_SCLN,  KC_DOT,         KC_SLSH,         LT(_FN, KC_J), KC_QUOT,
         SFT_T(KC_R),  ALT_T(KC_S),     CTL_T(KC_N),   GUI_T(KC_T),   KC_G,           KC_COMM,  GUI_T(KC_A),    CTL_T(KC_E),     ALT_T(KC_I),      SFT_T(KC_H),
         KC_X,         KC_C,            KC_L,          LT(_SYM, KC_D), KC_B,          KC_MINS,  LT(_SYM, KC_U), KC_O,            KC_Y,             KC_K,
                                                      KC_ENT,        LT(_NAV, KC_SPC), OSM(MOD_RSFT), KC_BSPC
@@ -66,12 +117,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                   KC_NO,     KC_NO,          KC_TRNS, KC_DEL
     ),
 
-    // ZMK's FN layer was Bluetooth (BT_SEL/BT_CLR), which has no wired Proton C
-    // equivalent. Reset/boot loader occupy the same positions; F-keys fill the rest.
+    // Matches ZMK's FN layer per physical key. BT_PRF*/BT_UNPR are placeholders;
+    // the wired Steel Toe has no Bluetooth radio. F-keys live on NAV.
     [_FN] = LAYOUT_split_3x5_2(
         KC_NO, KC_NO, KC_NO, QK_RBT, QK_BOOT,        QK_BOOT, QK_RBT, KC_NO, KC_NO, KC_NO,
-        KC_NO, KC_F3, KC_F2, KC_F1,  KC_F6,          KC_F6,   KC_F1,              KC_F2,                KC_F3, KC_NO,
-        KC_NO, KC_NO, KC_F5, KC_F4,  KC_NO,          KC_NO,   KC_F4,              KC_F5,                KC_NO, KC_NO,
+        KC_NO, BT_PRF3, BT_PRF2, BT_PRF1, BT_UNPR,   BT_UNPR, BT_PRF1, BT_PRF2, BT_PRF3, KC_NO,
+        KC_NO, KC_NO, BT_PRF5, BT_PRF4, KC_NO,       KC_NO, BT_PRF4, BT_PRF5, KC_NO, KC_NO,
                               KC_NO, KC_NO,           KC_TRNS, KC_NO
     ),
 };
