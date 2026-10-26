@@ -21,9 +21,9 @@ Both keymaps implement the same physical layout:
 - ZMK `mod-morph`s become QMK key overrides scoped to `MAIN`: `Shift+dot`→`!`,
   `Shift+comma`→`|`.
 - ZMK sticky-shift becomes `OSM(MOD_RSFT)`. Tap-hold is 200ms with a 150ms
-  quick tap; layer-taps are tap-preferred on both. QMK uses `CHORDAL_HOLD`
-  plus a per-key T exception for home-row mod-taps; ZMK uses per-hand balanced
-  home-row mod-taps with opposite-hand trigger positions.
+  quick tap; permissive/balanced holds keep layer and mod chords fast. T=GUI is
+  tap-preferred to prevent the "th"/"the" roll; all other mod-taps use
+  permissive hold.
 
 ## Steel Toe hardware notes
 

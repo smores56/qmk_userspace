@@ -8,9 +8,6 @@
 // order matches the ZMK 34-key matrix transform index order, unlike clog's
 // LAYOUT_split_3x5_2.
 
-// CHORDAL_HOLD depends on the generated chordal_hold_layout. The Osprette board
-// is not upstream; verify that layout before flashing this keymap.
-
 #include QMK_KEYBOARD_H
 
 enum layers {
@@ -45,16 +42,6 @@ combo_t key_combos[] = {
     [SLASH_J_CAPS]   = COMBO(caps_combo, KC_CAPS),
 };
 
-uint16_t get_combo_term(uint16_t combo_index, combo_t *combo) {
-    switch (combo_index) {
-        case SN_ESCAPE:
-        case NT_TAB:
-            return 15;
-        default:
-            return 20;
-    }
-}
-
 bool get_combo_must_tap(uint16_t combo_index, combo_t *combo) {
     switch (combo_index) {
         case FM_Z:
@@ -71,19 +58,9 @@ bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode
     return get_highest_layer(layer_state | default_layer_state) == _MAIN;
 }
 
-// Layer-taps stay tap-preferred on both firmwares so NAV/SYM/FN remain usable
-// with the same hand; chordal hold applies only to mod-taps.
-bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t *tap_hold_record, uint16_t other_keycode, keyrecord_t *other_record) {
-    if (IS_QK_LAYER_TAP(tap_hold_keycode)) {
-        return false;
-    }
-    return get_chordal_hold_default(tap_hold_record, other_record);
-}
-
+// T=GUI is the th/the exception; everything else, including layer-taps, uses
+// permissive hold so mod and layer chords stay fast.
 bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
-    if (IS_QK_LAYER_TAP(keycode)) {
-        return false;
-    }
     switch (keycode) {
         case GUI_T(KC_T):
             return false;
