@@ -21,32 +21,32 @@ enum combos {
     FM_Z,
     MP_Q,
     MV_J,
-    SN_ESCAPE,
-    NT_TAB,
+    CL_ESCAPE,
+    LD_TAB,
     SLASH_BSLS_CAPS,
 };
 
 const uint16_t PROGMEM z_combo[]      = {LT(_FN, KC_F), KC_M, COMBO_END};
 const uint16_t PROGMEM q_combo[]      = {KC_M, KC_P, COMBO_END};
 const uint16_t PROGMEM j_combo[]      = {KC_M, KC_V, COMBO_END};
-const uint16_t PROGMEM escape_combo[] = {ALT_T(KC_S), CTL_T(KC_N), COMBO_END};
-const uint16_t PROGMEM tab_combo[]    = {CTL_T(KC_N), GUI_T(KC_T), COMBO_END};
+const uint16_t PROGMEM escape_combo[] = {KC_C, KC_L, COMBO_END};
+const uint16_t PROGMEM tab_combo[]    = {KC_L, LT(_SYM, KC_D), COMBO_END};
 const uint16_t PROGMEM caps_combo[]   = {KC_SLSH, LT(_FN, KC_BSLS), COMBO_END};
 
 combo_t key_combos[] = {
     [FM_Z]            = COMBO(z_combo, KC_Z),
     [MP_Q]            = COMBO(q_combo, KC_Q),
     [MV_J]            = COMBO(j_combo, KC_J),
-    [SN_ESCAPE]       = COMBO(escape_combo, KC_ESC),
-    [NT_TAB]          = COMBO(tab_combo, KC_TAB),
+    [CL_ESCAPE]       = COMBO(escape_combo, KC_ESC),
+    [LD_TAB]          = COMBO(tab_combo, KC_TAB),
     [SLASH_BSLS_CAPS] = COMBO(caps_combo, KC_CAPS),
 };
 
 // Esc/Tab are the fast 15ms pair; everything else uses 20ms.
 uint16_t get_combo_term(uint16_t combo_index, combo_t *combo) {
     switch (combo_index) {
-        case SN_ESCAPE:
-        case NT_TAB:
+        case CL_ESCAPE:
+        case LD_TAB:
             return 15;
         default:
             return 20;
